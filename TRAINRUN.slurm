@@ -25,7 +25,8 @@ pip freeze
 # Check GPUs
 echo $CUDA_VISIBLE_DEVICES
 
-nvcc -V
-gcc --version
 # Run your training scripts (Python file, Shell scripts...ect)
+python3 -c 'import torch, torchvision; print(torch.__version__, torch.cuda.is_available())'
+python3 -c 'import mmseg print(mmseg.__version__)'
+
 #python -O train_test.py
