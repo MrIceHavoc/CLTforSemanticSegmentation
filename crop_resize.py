@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import tensorflow_datasets as tfds
 from tensorflow import keras
-from tensorflow.keras import layers
+from keras import layers
 
 class RandomResizedCrop(layers.Layer):
     def __init__(self, scale, ratio):

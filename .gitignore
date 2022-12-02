@@ -130,3 +130,6 @@ dmypy.json
 
 # Dev kit
 /VOCdevkit
+
+# VSCode settings
+.vscode/
