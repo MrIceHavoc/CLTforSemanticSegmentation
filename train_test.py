@@ -1,4 +1,3 @@
-#TODO: Implemement Training and Test pipeline with visualization
 import mmcv
 import matplotlib.pyplot as plt
 import argparse
@@ -29,4 +28,4 @@ if __name__ == "__main__":
         for file in mmcv.scandir(os.path.join(args['dataset'], img_dir), suffix='.jpg'):
             img = mmcv.imread(file)
             result = inference_segmentor(model, img)
-            show_result_pyplot(model, img, result, get_palette('VOCdevkit'))
+            show_result_pyplot(model, img, result, get_palette('voc'))
