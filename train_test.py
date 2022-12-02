@@ -5,18 +5,30 @@ import os
 import pathlib
 import numpy as np
 from PIL import Image
-from mmseg.apis import inference_segmentor, init_segmentor, show_result_pyplot
+from mmseg.apis import train_segmentor, inference_segmentor, init_segmentor, show_result_pyplot, set_random_seed
 from mmseg.core.evaluation import get_palette
+from mmseg.utils import get_device
+from mmseg.models import build_segmentor
+from mmseg.datasets import build_dataset
+import torch
 
 DATASETS_DIR = '/mmsegmentation/data/'
 
-def main(model, config_file, dataset, mode):
-    model = init_segmentor(config_file, mode)
+def main(checkpoint, config_file, dataset, mode):
     if mode == 'train':
-        s = 0
+        cfg = mmcv.Config.fromfile(config_file) 
+        cfg.model.decode_head.num_classes = 21
+        cfg.model.auxiliary_head.num_classes = 21
+        cfg.device = get_device()
+        model = build_segmentor(cfg.model)
+        datasets = [build_dataset(cfg.data.train)]
+        model.CLASSES = datasets[0].CLASSES
+        mmcv.mkdir_or_exist(os.path.abspath(cfg.work_dir))
+        train_segmentor(model, datasets, cfg, distributed=False, validate=True, meta=dict())
     elif mode == 'test':
-        s = 1
+        cfg = mmcv.Config.fromfile(config_file)
     elif mode == 'inference':
+        model = init_segmentor(config_file, checkpoint)
         img_dir = 'JPEGImages/'
         for file in mmcv.scandir(os.path.join(dataset, img_dir), suffix='.jpg'):
             img = mmcv.imread(file)
