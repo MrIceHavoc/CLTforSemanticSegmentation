@@ -18,10 +18,9 @@ VOC_DATASET = os.path.join(DATASETS_DIR, 'VOCdevkit/VOC2012/')
 def main(checkpoint, config_file, dataset, mode):
     if mode == 'train':
         cfg = mmcv.Config.fromfile(config_file) 
-        cfg.dataset_type = 'voc'
+        cfg.dataset_type = 'voc.py'
         cfg.dataset_root = dataset
         cfg.model.decode_head.num_classes = 21
-        cfg.model.auxiliary_head.num_classes = 21
         
         cfg.data.train.type = cfg.dataset_type
         cfg.data.train.data_root = cfg.data_root
@@ -42,10 +41,9 @@ def main(checkpoint, config_file, dataset, mode):
         train_segmentor(model, datasets, cfg, distributed=False, validate=True, meta=dict())
     elif mode == 'test':
         cfg = mmcv.Config.fromfile(config_file)
-        cfg.dataset_type = 'voc'
+        cfg.dataset_type = 'voc.py'
         cfg.dataset_root = dataset
         cfg.model.decode_head.num_classes = 21
-        cfg.model.auxiliary_head.num_classes = 21
 
         cfg.data.test.type = cfg.dataset_type
         cfg.data.test.data_root = cfg.data_root
