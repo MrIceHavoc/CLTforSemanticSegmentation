@@ -25,5 +25,7 @@ pip freeze
 # Check GPUs
 echo $CUDA_VISIBLE_DEVICES
 
+nvcc -V
+gcc --version
 # Run your training scripts (Python file, Shell scripts...ect)
-python -O train_test.py
+#python -O train_test.py
