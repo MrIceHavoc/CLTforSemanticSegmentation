@@ -1,6 +1,6 @@
 _base_ = [
     '../mmsegmentation/configs/_base_/models/segmenter_vit-b16_mask.py',
-    '../mmsegmentation/configs/_base_/datasets/ade20k.py', '../mmsegmentation/configs/_base_/default_runtime.py',
+    '../mmsegmentation/configs/_base_/datasets/pascal_voc12.py', '../mmsegmentation/configs/_base_/default_runtime.py',
     '../mmsegmentation/configs/_base_/schedules/schedule_160k.py'
 ]
 
@@ -20,7 +20,7 @@ optimizer = dict(lr=0.001, weight_decay=0.0)
 
 img_norm_cfg = dict(
     mean=[127.5, 127.5, 127.5], std=[127.5, 127.5, 127.5], to_rgb=True)
-crop_size = (512, 512)
+crop_size = (320, 320)
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations', reduce_zero_label=True),

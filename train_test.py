@@ -12,16 +12,16 @@ from mmseg.models import build_segmentor
 from mmseg.datasets import build_dataset
 import torch
 
-DATASETS_DIR = '/mmsegmentation/data/'
+DATASETS_DIR = '../'
 VOC_DATASET = os.path.join(DATASETS_DIR, 'VOCdevkit/VOC2012/')
 
 def main(checkpoint, config_file, dataset, mode):
     if mode == 'train':
-        cfg = mmcv.Config.fromfile(config_file) 
-        cfg.dataset_type = 'voc.py'
+        cfg = mmcv.Config.fromfile(config_file)
+        cfg.dataset_type = 'PascalVOCDataset'
         cfg.dataset_root = dataset
         cfg.model.decode_head.num_classes = 21
-        
+
         cfg.data.train.type = cfg.dataset_type
         cfg.data.train.data_root = cfg.data_root
         cfg.data.train.img_dir = os.path.join(dataset, 'JPEGImages/')
@@ -41,7 +41,7 @@ def main(checkpoint, config_file, dataset, mode):
         train_segmentor(model, datasets, cfg, distributed=False, validate=True, meta=dict())
     elif mode == 'test':
         cfg = mmcv.Config.fromfile(config_file)
-        cfg.dataset_type = 'voc.py'
+        cfg.dataset_type = 'PascalVOCDataset'
         cfg.dataset_root = dataset
         cfg.model.decode_head.num_classes = 21
 
