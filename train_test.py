@@ -16,9 +16,10 @@ DATASETS_DIR = '/mmsegmentation/data/'
 VOC_DATASET = os.path.join(DATASETS_DIR, 'VOCdevkit/VOC2012/')
 
 def main(checkpoint, config_file, dataset, mode):
+    print(dataset)
     if mode == 'train':
         cfg = mmcv.Config.fromfile(config_file) 
-        cfg.dataset_type = 'voc.py'
+        cfg.dataset_type = 'PascalVOCDataset'
         cfg.dataset_root = dataset
         cfg.model.decode_head.num_classes = 21
         
@@ -41,7 +42,7 @@ def main(checkpoint, config_file, dataset, mode):
         train_segmentor(model, datasets, cfg, distributed=False, validate=True, meta=dict())
     elif mode == 'test':
         cfg = mmcv.Config.fromfile(config_file)
-        cfg.dataset_type = 'voc.py'
+        cfg.dataset_type = 'PascalVOCDataset'
         cfg.dataset_root = dataset
         cfg.model.decode_head.num_classes = 21
 
@@ -75,7 +76,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='CLT', description="Train/Test Contrastive Learning Transformer for Semantic Segmentation.")
     parser.add_argument('--model', default=os.path.join(cwd, '/segmenter_vit-t_mask_8x1_512x512_160k_ade20k_20220105_151706-ffcf7509.pth'))
     parser.add_argument('--config', default=cwd + '/config.py')
-    parser.add_argument('--dataset', type=pathlib.Path, default=os.path.join(cwd, VOC_DATASET))
+    parser.add_argument('--dataset', type=pathlib.Path, default=cwd + VOC_DATASET)
     parser.add_argument('--mode', choices=['train', 'test', 'inference'], default='train')
     args = vars(parser.parse_args())
     main(args['model'], args['config'], args['dataset'], args['mode'])
