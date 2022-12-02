@@ -14,8 +14,8 @@ img_dir = 'JPEGImages/'
 if __name__ == "__main__":
     cwd = os.getcwd()
     parser = argparse.ArgumentParser(prog='CLT', description="Train/Test Contrastive Learning Transformer for Semantic Segmentation.")
-    parser.add_argument('--model', type=pathlib.Path, default=cwd + '/segmenter_vit-t_mask_8x1_512x512_160k_ade20k_20220105_151706-ffcf7509.pth')
-    parser.add_argument('--config_file', type=pathlib.Path, default=cwd + '/config.py')
+    parser.add_argument('--model', default=cwd + '/segmenter_vit-t_mask_8x1_512x512_160k_ade20k_20220105_151706-ffcf7509.pth')
+    parser.add_argument('--config_file', default=cwd + '/config.py')
     parser.add_argument('--dataset', type=pathlib.Path, default=cwd + '/VOCdevkit/VOC2012/')
     parser.add_argument('--mode', choices=['train', 'test', 'inference'], default='train')
     args = vars(parser.parse_args())
