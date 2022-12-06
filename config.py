@@ -14,12 +14,20 @@ model = dict(
         in_channels=192,
         channels=192,
         num_heads=3,
-        embed_dims=192,),
-    loss_decode=dict(  # Config of loss function for the decode_head.
-        type='CrossEntropyLoss',  # Type of loss used for segmentation.
-        use_sigmoid=False,  # Whether use sigmoid activation for segmentation.
-        loss_weight=1.0)),  # Loss weight of decode head.
-    )
+        embed_dims=192,,
+        loss_decode=dict(  # Config of loss function for the decode_head.
+            type='CrossEntropyLoss',  # Type of loss used for segmentation.
+            use_sigmoid=False,  # Whether use sigmoid activation for segmentation.
+            loss_weight=1.0
+        )),
+    auxiliary_head=dict(
+        type='ProjectionHead',
+        loss_decode=dict(  # Config of loss function for the decode_head.
+            type='ContrastiveLoss',  # Type of loss used for segmentation.
+            loss_weight = 1.0,
+        ),
+    ),
+)
 optimizer = dict(lr=0.001, weight_decay=0.0)
 
 img_norm_cfg = dict(
