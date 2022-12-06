@@ -29,4 +29,6 @@ echo $CUDA_VISIBLE_DEVICES
 python3 -c 'import torch, torchvision; print(torch.__version__, torch.cuda.is_available())'
 python3 -c 'import mmseg print(mmseg.__version__)'
 
-#python -O train_test.py
+pip install mmcv-full==1.7.0+torch1.12.0+cu113 -f https://download.openmmlab.com/mmcv/dist/index.html
+
+python -O train_test.py
