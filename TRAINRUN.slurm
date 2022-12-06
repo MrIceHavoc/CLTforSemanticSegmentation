@@ -16,7 +16,7 @@ srun -l /bin/pwd
 # echo current time
 srun -l /bin/date
 
-# Remove all Linux Modules (recommanded)
+# Remove all Linux Modules (recommended)
 module purge
 
 # For debug purpose
