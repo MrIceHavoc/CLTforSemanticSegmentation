@@ -14,11 +14,11 @@ class ProjectionHead(BaseDecodeHead):
     Args:
     """
 
-    def __init__(self,
-                 hidden_dim,
-                 model_out,
-                 **kwargs):
+    def __init__(self, **kwargs):
         super(ProjectionHead, self).__init__(**kwargs)
+        self.transformer = None
+
+    def init_weights(self, hidden_dim, model_out):
         self.transformer = model_out
         self.transformer.fc = nn.Sequential(
             self.transformer.fc,
