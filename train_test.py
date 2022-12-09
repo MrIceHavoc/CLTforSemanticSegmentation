@@ -56,7 +56,7 @@ def main(checkpoint, config_file, dataset, mode):
         #cfg.model_out=init_segmentor(config_file, checkpoint)
         #cfg.hidden_dim=cfg.model_out.backbone.out_channels
         cfg.device = 'cuda'#get_device()
-        cfg.gpu_ids=[0,1]
+        cfg.gpu_ids=[0]
 
         cfg.work_dir = './work_dirs/clt_segmentation'
         cfg.seed = 42
