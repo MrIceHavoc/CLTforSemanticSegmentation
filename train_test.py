@@ -47,7 +47,9 @@ def main(checkpoint, config_file, dataset, mode):
         cfg.data.train.split = os.path.join(dataset, 'ImageSets/Segmentation/train.txt')
         cfg.load_from = checkpoint
 
-
+        cfg.data.val.img_dir=os.path.join(dataset, 'JPEGImages/')
+        cfg.data.val.ann_dir = os.path.join(dataset, 'Annotations/')
+        cfg.data.val.split = os.path.join(dataset, 'ImageSets/Segmentation/val.txt')
         #cfg.model.projection_head.init_weights(hidden_dim=192, model_out=init_segmentor(config_file, checkpoint))
 
         #cfg.model_out=init_segmentor(config_file, checkpoint)
@@ -59,7 +61,7 @@ def main(checkpoint, config_file, dataset, mode):
         cfg.seed = 42
         print("TRAIN", cfg.data.train)
         datasets = [build_dataset(cfg.data.train)]
-
+        print("VALIDATION", cfg.data.val)
         model = build_segmentor(cfg.model)
         model.auxiliary_head.init_weights(in_channels=192, hidden_dim=192, model_out=init_segmentor(config_file, checkpoint))
         model.CLASSES = datasets[0].CLASSES
