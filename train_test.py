@@ -56,7 +56,7 @@ def main(checkpoint, config_file, dataset, mode):
         cfg.gpu_ids=[0,1]
 
         cfg.work_dir = './work_dirs/clt_segmentation'
-        cfg.seed = 42
+        cfg.seed = 42g
         print("TRAIN", cfg.data.train)
         datasets = [build_dataset(cfg.data.train)]
 
@@ -76,7 +76,7 @@ def main(checkpoint, config_file, dataset, mode):
         cfg.data.test.img_dir = os.path.join(dataset, 'JPEGImages/')
         cfg.data.test.ann_dir = os.path.join(dataset, 'Annotations/')
         cfg.data.test.pipeline = cfg.test_pipeline
-        cfg.data.test.split = os.path.join(dataset, 'ImageSets/Segmentation/val.txt')
+        cfg.data.test.split = os.path.join('./mmsegmentation/mmseg/data/', 'ImageSets/Segmentation/val.txt')
         cfg.load_from = checkpoint
 
         model = build_segmentor(cfg.model)
