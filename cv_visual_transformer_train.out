@@ -1,6 +1,6 @@
 0: n7
 0: /home/richardalbr/computer_vision/CLTforSemanticSegmentation
-0: Sa 10. Dez 00:51:29 KST 2022
+0: Sa 10. Dez 00:56:16 KST 2022
 addict==2.4.0
 aiohttp==3.8.3
 aiosignal==1.3.1
@@ -58,48 +58,7 @@ yapf==0.32.0
 yarl==1.8.2
 zipp==3.11.0
 0,1
-2022-12-10 00:51:45,180 - mmseg - INFO - Loaded 1464 images
-/home/richardalbr/computer_vision/CLTforSemanticSegmentation/mmsegmentation/mmseg/models/backbones/vit.py:219: UserWarning: DeprecationWarning: pretrained is deprecated, please use "init_cfg" instead
-  warnings.warn('DeprecationWarning: pretrained is deprecated, '
-/home/richardalbr/computer_vision/CLTforSemanticSegmentation/mmsegmentation/mmseg/models/losses/cross_entropy_loss.py:235: UserWarning: Default ``avg_non_ignore`` is False, if you would like to ignore the certain label and average loss over non-ignore labels, which is the same with PyTorch official cross_entropy, set ``avg_non_ignore=True``.
-  warnings.warn(
-/home/richardalbr/computer_vision/cvvenv/lib/python3.9/site-packages/torch/utils/data/dataloader.py:563: UserWarning: This DataLoader will create 8 worker processes in total. Our suggested max number of worker in current system is 6, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
-  warnings.warn(_create_warning_msg(
-DATASET /home/richardalbr/computer_vision/CLTforSemanticSegmentation/mmsegmentation/mmseg/data/VOCdevkit/VOC2012
-TRAIN {'type': 'PascalVOCDataset', 'data_root': './mmsegmentation/mmseg/data/VOCdevkit/VOC2012', 'img_dir': '/home/richardalbr/computer_vision/CLTforSemanticSegmentation/mmsegmentation/mmseg/data/VOCdevkit/VOC2012/JPEGImages/', 'ann_dir': '/home/richardalbr/computer_vision/CLTforSemanticSegmentation/mmsegmentation/mmseg/data/VOCdevkit/VOC2012/Annotations/', 'split': '/home/richardalbr/computer_vision/CLTforSemanticSegmentation/mmsegmentation/mmseg/data/VOCdevkit/VOC2012/ImageSets/Segmentation/train.txt', 'pipeline': [{'type': 'LoadImageFromFile'}, {'type': 'LoadAnnotations', 'reduce_zero_label': True}, {'type': 'Resize', 'img_scale': (2048, 512), 'ratio_range': (0.5, 2.0)}, {'type': 'RandomCrop', 'crop_size': (320, 320), 'cat_max_ratio': 0.75}, {'type': 'RandomFlip', 'prob': 0.5}, {'type': 'PhotoMetricDistortion'}, {'type': 'Normalize', 'mean': [127.5, 127.5, 127.5], 'std': [127.5, 127.5, 127.5], 'to_rgb': True}, {'type': 'Pad', 'size': (320, 320), 'pad_val': 0, 'seg_pad_val': 255}, {'type': 'DefaultFormatBundle'}, {'type': 'Collect', 'keys': ['img', 'gt_semantic_seg']}]}
-load checkpoint from local path: /home/richardalbr/computer_vision/CLTforSemanticSegmentation/segmenter_vit-t_mask_8x1_512x512_160k_ade20k_20220105_151706-ffcf7509.pth
-The model and loaded state dict do not match exactly
-
-missing keys in source state_dict: auxiliary_head.conv_seg.weight, auxiliary_head.conv_seg.bias
-
-Traceback (most recent call last):
-  File "/home/richardalbr/computer_vision/cvvenv/lib/python3.9/site-packages/mmcv/utils/registry.py", line 69, in build_from_cfg
-    return obj_cls(**args)
-  File "/home/richardalbr/computer_vision/CLTforSemanticSegmentation/mmsegmentation/mmseg/datasets/voc.py", line 28, in __init__
-    super(PascalVOCDataset, self).__init__(
-  File "/home/richardalbr/computer_vision/CLTforSemanticSegmentation/mmsegmentation/mmseg/datasets/custom.py", line 129, in __init__
-    self.img_infos = self.load_annotations(self.img_dir, self.img_suffix,
-  File "/home/richardalbr/computer_vision/CLTforSemanticSegmentation/mmsegmentation/mmseg/datasets/custom.py", line 156, in load_annotations
-    lines = mmcv.list_from_file(
-  File "/home/richardalbr/computer_vision/cvvenv/lib/python3.9/site-packages/mmcv/fileio/parse.py", line 46, in list_from_file
-    with StringIO(file_client.get_text(filename, encoding)) as f:
-  File "/home/richardalbr/computer_vision/cvvenv/lib/python3.9/site-packages/mmcv/fileio/file_client.py", line 1027, in get_text
-    return self.client.get_text(filepath, encoding)
-  File "/home/richardalbr/computer_vision/cvvenv/lib/python3.9/site-packages/mmcv/fileio/file_client.py", line 552, in get_text
-    with open(filepath, encoding=encoding) as f:
-FileNotFoundError: [Errno 2] No such file or directory: 'data/VOCdevkit/VOC2012/ImageSets/Segmentation/val.txt'
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/richardalbr/computer_vision/CLTforSemanticSegmentation/train_test.py", line 108, in <module>
-    main(args['model'], args['config'], args['dataset'], args['mode'])
-  File "/home/richardalbr/computer_vision/CLTforSemanticSegmentation/train_test.py", line 67, in main
-    train_segmentor(model, datasets, cfg, distributed=False, validate=True)
-  File "/home/richardalbr/computer_vision/CLTforSemanticSegmentation/mmsegmentation/mmseg/apis/train.py", line 155, in train_segmentor
-    val_dataset = build_dataset(cfg.data.val, dict(test_mode=True))
-  File "/home/richardalbr/computer_vision/CLTforSemanticSegmentation/mmsegmentation/mmseg/datasets/builder.py", line 85, in build_dataset
-    dataset = build_from_cfg(cfg, DATASETS, default_args)
-  File "/home/richardalbr/computer_vision/cvvenv/lib/python3.9/site-packages/mmcv/utils/registry.py", line 72, in build_from_cfg
-    raise type(e)(f'{obj_cls.__name__}: {e}')
-FileNotFoundError: PascalVOCDataset: [Errno 2] No such file or directory: 'data/VOCdevkit/VOC2012/ImageSets/Segmentation/val.txt'
+  File "/home/richardalbr/computer_vision/CLTforSemanticSegmentation/train_test.py", line 59
+    cfg.seed = 42g
+                 ^
+SyntaxError: invalid syntax
