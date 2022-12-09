@@ -42,7 +42,7 @@ def main(checkpoint, config_file, dataset, mode):
         cfg.data.train.type = cfg.dataset_type
         cfg.data.train.data_root = cfg.data_root
         cfg.data.train.img_dir = os.path.join(dataset, 'JPEGImages/')
-        cfg.data.train.ann_dir = os.path.join(dataset, 'Annotations/')
+        cfg.data.train.ann_dir = os.path.join(dataset, 'SegmentationClass/')
         cfg.data.train.pipeline = cfg.train_pipeline
         cfg.data.train.split = os.path.join(dataset, 'ImageSets/Segmentation/train.txt')
         cfg.load_from = checkpoint
@@ -77,7 +77,7 @@ def main(checkpoint, config_file, dataset, mode):
         cfg.data.test.type = cfg.dataset_type
         cfg.data.test.data_root = cfg.data_root
         cfg.data.test.img_dir = os.path.join(dataset, 'JPEGImages/')
-        cfg.data.test.ann_dir = os.path.join(dataset, 'Annotations/')
+        cfg.data.test.ann_dir = os.path.join(dataset, 'SegmentationClass/')
         cfg.data.test.pipeline = cfg.test_pipeline
         cfg.data.test.split = os.path.join(dataset, 'ImageSets/Segmentation/val.txt')
         cfg.load_from = checkpoint
