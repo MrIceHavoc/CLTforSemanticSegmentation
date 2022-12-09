@@ -30,12 +30,14 @@ def info_nce_loss(predictions):
 
 
 def main(checkpoint, config_file, dataset, mode):
-    print(dataset)
+    print("DATASET", dataset)
     if mode == 'train':
         cfg = mmcv.Config.fromfile(config_file)
         cfg.dataset_type = 'PascalVOCDataset'
         cfg.dataset_root = dataset
         cfg.model.decode_head.num_classes = 21
+
+        cfg.data_root = "./mmsegmentation/mmseg/data/VOCdevkit/VOC2012"
 
         cfg.data.train.type = cfg.dataset_type
         cfg.data.train.data_root = cfg.data_root
@@ -53,9 +55,9 @@ def main(checkpoint, config_file, dataset, mode):
         cfg.device = 'cuda'#get_device()
         cfg.gpu_ids=[0,1]
 
-        cfg.work_dir = './work_dirs/clt_segmentation'
+        #cfg.work_dir = './work_dirs/clt_segmentation'
         cfg.seed = 42
-
+        print("TRAIN", cfg.data.train)
         datasets = [build_dataset(cfg.data.train)]
 
         model = build_segmentor(cfg.model)
