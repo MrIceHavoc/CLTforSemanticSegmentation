@@ -102,7 +102,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='CLT', description="Train/Test Contrastive Learning Transformer for Semantic Segmentation.")
     parser.add_argument('--model', default=os.path.join(cwd, 'segmenter_vit-t_mask_8x1_512x512_160k_ade20k_20220105_151706-ffcf7509.pth'))
     parser.add_argument('--config', default=cwd + '/config.py')
-    parser.add_argument('--dataset', type=pathlib.Path, default=DATASETS_DIR + VOC_DATASET)
+    parser.add_argument('--dataset', type=pathlib.Path, default=VOC_DATASET)
     parser.add_argument('--mode', choices=['train', 'test', 'inference'], default='train')
     args = vars(parser.parse_args())
     main(args['model'], args['config'], args['dataset'], args['mode'])
