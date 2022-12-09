@@ -1,7 +1,4 @@
-# Copyright (c) OpenMMLab. All rights reserved.
-import torch
 import torch.nn as nn
-from mmcv.cnn import ConvModule
 
 from ..builder import HEADS
 from .decode_head import BaseDecodeHead
