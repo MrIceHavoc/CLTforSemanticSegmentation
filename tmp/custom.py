@@ -229,6 +229,7 @@ class CustomDataset(Dataset):
         ann_info = self.get_ann_info(idx)
         results = dict(img_info=img_info, ann_info=ann_info)
         self.pre_pipeline(results)
+        print("WHAT IS THIS?!: ", self.pre_pipeline(results))
         return self.pipeline(results)
 
     def prepare_test_img(self, idx):
