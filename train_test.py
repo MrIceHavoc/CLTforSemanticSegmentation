@@ -45,14 +45,15 @@ def main(checkpoint, config_file, dataset, mode):
         cfg.data.train.split = os.path.join(dataset, 'ImageSets/Segmentation/train.txt')
         cfg.load_from = checkpoint
 
+
         #cfg.model.projection_head.init_weights(hidden_dim=192, model_out=init_segmentor(config_file, checkpoint))
 
         #cfg.model_out=init_segmentor(config_file, checkpoint)
         #cfg.hidden_dim=cfg.model_out.backbone.out_channels
+        cfg.device = 'cuda'#get_device()
 
         cfg.work_dir = './work_dirs/clt_segmentation'
         cfg.seed = 42
-        cfg.device = get_device()
 
         datasets = [build_dataset(cfg.data.train)]
 
@@ -60,7 +61,7 @@ def main(checkpoint, config_file, dataset, mode):
         model.auxiliary_head.init_weights(in_channels=192, hidden_dim=192, model_out=init_segmentor(config_file, checkpoint))
         model.CLASSES = datasets[0].CLASSES
         mmcv.mkdir_or_exist(os.path.abspath(cfg.work_dir))
-        train_segmentor(model, datasets, cfg, distributed=False, validate=True, meta=dict())
+        train_segmentor(model, datasets, cfg, distributed=False, validate=True)
     elif mode == 'test':
         cfg = mmcv.Config.fromfile(config_file)
         cfg.dataset_type = 'PascalVOCDataset'
