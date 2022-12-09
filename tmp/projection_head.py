@@ -16,10 +16,10 @@ class ProjectionHead(BaseDecodeHead):
         self.transformer = None
         self.fc = None
 
-    def init_weights(self, hidden_dim, model_out):
+    def init_weights(self, in_channels, hidden_dim, model_out):
         self.transformer = model_out
         self.fc = nn.Sequential(
-            self.transformer.fc,
+            nn.Linear(in_channels, 4*hidden_dim),
             nn.ReLU(inplace=True),
             nn.Linear(4*hidden_dim, hidden_dim)
         )
