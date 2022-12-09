@@ -14,7 +14,7 @@ from mmseg.models import build_loss
 
 import torch
 
-DATASETS_DIR = '../'
+DATASETS_DIR = '/mmsegmentation/mmseg/data/'
 VOC_DATASET = os.path.join(DATASETS_DIR, 'VOCdevkit/VOC2012/')
 
 def info_nce_loss(predictions):
@@ -45,12 +45,19 @@ def main(checkpoint, config_file, dataset, mode):
         cfg.data.train.split = os.path.join(dataset, 'ImageSets/Segmentation/train.txt')
         cfg.load_from = checkpoint
 
+        #cfg.model.projection_head.init_weights(hidden_dim=192, model_out=init_segmentor(config_file, checkpoint))
+
+        #cfg.model_out=init_segmentor(config_file, checkpoint)
+        #cfg.hidden_dim=cfg.model_out.backbone.out_channels
+
         cfg.work_dir = './work_dirs/clt_segmentation'
         cfg.seed = 42
         cfg.device = get_device()
 
         datasets = [build_dataset(cfg.data.train)]
+
         model = build_segmentor(cfg.model)
+        model.auxiliary_head.init_weights(hidden_dim=192, model_out=init_segmentor(config_file, checkpoint))
         model.CLASSES = datasets[0].CLASSES
         mmcv.mkdir_or_exist(os.path.abspath(cfg.work_dir))
         train_segmentor(model, datasets, cfg, distributed=False, validate=True, meta=dict())
@@ -89,7 +96,7 @@ def main(checkpoint, config_file, dataset, mode):
 if __name__ == "__main__":
     cwd = os.getcwd()
     parser = argparse.ArgumentParser(prog='CLT', description="Train/Test Contrastive Learning Transformer for Semantic Segmentation.")
-    parser.add_argument('--model', default=os.path.join(cwd, '/segmenter_vit-t_mask_8x1_512x512_160k_ade20k_20220105_151706-ffcf7509.pth'))
+    parser.add_argument('--model', default=os.path.join(cwd, 'segmenter_vit-t_mask_8x1_512x512_160k_ade20k_20220105_151706-ffcf7509.pth'))
     parser.add_argument('--config', default=cwd + '/config.py')
     parser.add_argument('--dataset', type=pathlib.Path, default=cwd + VOC_DATASET)
     parser.add_argument('--mode', choices=['train', 'test', 'inference'], default='train')

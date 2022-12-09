@@ -1,7 +1,7 @@
 _base_ = [
-    '../mmsegmentation/configs/_base_/models/segmenter_vit-b16_mask.py',
-    '../mmsegmentation/configs/_base_/datasets/pascal_voc12.py', '../mmsegmentation/configs/_base_/default_runtime.py',
-    '../mmsegmentation/configs/_base_/schedules/schedule_160k.py'
+    './mmsegmentation/configs/_base_/models/segmenter_vit-b16_mask.py',
+    './mmsegmentation/configs/_base_/datasets/pascal_voc12.py', './mmsegmentation/configs/_base_/default_runtime.py',
+    './mmsegmentation/configs/_base_/schedules/schedule_160k.py'
 ]
 
 checkpoint = 'https://download.openmmlab.com/mmsegmentation/v0.5/pretrain/segmenter/vit_tiny_p16_384_20220308-cce8c795.pth'  # noqa
@@ -14,7 +14,7 @@ model = dict(
         in_channels=192,
         channels=192,
         num_heads=3,
-        embed_dims=192,,
+        embed_dims=192,
         loss_decode=dict(  # Config of loss function for the decode_head.
             type='CrossEntropyLoss',  # Type of loss used for segmentation.
             use_sigmoid=False,  # Whether use sigmoid activation for segmentation.
@@ -26,6 +26,9 @@ model = dict(
             type='ContrastiveLoss',  # Type of loss used for segmentation.
             loss_weight = 1.0,
         ),
+        in_channels=192,
+        channels=192,
+        num_classes=21,
     ),
 )
 optimizer = dict(lr=0.001, weight_decay=0.0)
