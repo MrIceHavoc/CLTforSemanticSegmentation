@@ -37,7 +37,7 @@ def main(checkpoint, config_file, dataset, mode):
         cfg.dataset_root = dataset
         cfg.model.decode_head.num_classes = 21
 
-        cfg.data_root = "./mmsegmentation/mmseg/data/VOCdevkit/VOC2012"
+        cfg.data_root = ""#./mmsegmentation/mmseg/data/VOCdevkit/VOC2012
 
         cfg.data.train.type = cfg.dataset_type
         cfg.data.train.data_root = cfg.data_root
