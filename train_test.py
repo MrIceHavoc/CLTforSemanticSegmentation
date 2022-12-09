@@ -55,7 +55,7 @@ def main(checkpoint, config_file, dataset, mode):
         cfg.device = 'cuda'#get_device()
         cfg.gpu_ids=[0,1]
 
-        #cfg.work_dir = './work_dirs/clt_segmentation'
+        cfg.work_dir = './work_dirs/clt_segmentation'
         cfg.seed = 42
         print("TRAIN", cfg.data.train)
         datasets = [build_dataset(cfg.data.train)]
