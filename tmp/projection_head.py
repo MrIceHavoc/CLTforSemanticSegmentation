@@ -1,7 +1,4 @@
-# Copyright (c) OpenMMLab. All rights reserved.
-import torch
 import torch.nn as nn
-from mmcv.cnn import ConvModule
 
 from ..builder import HEADS
 from .decode_head import BaseDecodeHead
@@ -17,11 +14,12 @@ class ProjectionHead(BaseDecodeHead):
     def __init__(self, **kwargs):
         super(ProjectionHead, self).__init__(**kwargs)
         self.transformer = None
+        self.fc = None
 
-    def init_weights(self, hidden_dim, model_out):
+    def init_weights(self, in_channels, hidden_dim, model_out):
         self.transformer = model_out
-        self.transformer.fc = nn.Sequential(
-            self.transformer.fc,
+        self.fc = nn.Sequential(
+            nn.Linear(in_channels, 4*hidden_dim),
             nn.ReLU(inplace=True),
             nn.Linear(4*hidden_dim, hidden_dim)
         )
@@ -38,7 +36,8 @@ class ProjectionHead(BaseDecodeHead):
                 H, W) which is feature map for last layer of decoder head.
         """
         x = self._transform_inputs(inputs)
-        feats = self.transformer(x)
+        logits = self.transformer(x)
+        feats = self.fc(logits)
         return feats
 
     def forward(self, inputs):
