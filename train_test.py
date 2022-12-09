@@ -56,7 +56,7 @@ def main(checkpoint, config_file, dataset, mode):
         cfg.gpu_ids=[0,1]
 
         cfg.work_dir = './work_dirs/clt_segmentation'
-        cfg.seed = 42g
+        cfg.seed = 42
         print("TRAIN", cfg.data.train)
         datasets = [build_dataset(cfg.data.train)]
 
