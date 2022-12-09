@@ -62,7 +62,7 @@ def main(checkpoint, config_file, dataset, mode):
         model.auxiliary_head.init_weights(in_channels=192, hidden_dim=192, model_out=init_segmentor(config_file, checkpoint))
         model.CLASSES = datasets[0].CLASSES
         mmcv.mkdir_or_exist(os.path.abspath(cfg.work_dir))
-        train_segmentor(model, datasets, cfg, distributed=False, validate=True, device_ids=cfg.gpu_ids)
+        train_segmentor(model, datasets, cfg, distributed=False, validate=True)
     elif mode == 'test':
         cfg = mmcv.Config.fromfile(config_file)
         cfg.dataset_type = 'PascalVOCDataset'
