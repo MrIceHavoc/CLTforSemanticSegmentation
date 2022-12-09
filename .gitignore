@@ -128,8 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Dev kit
-/VOCdevkit
+# MMSegmentation
+/mmsegmentation
 
 # VSCode settings
 .vscode/
