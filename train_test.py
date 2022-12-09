@@ -51,6 +51,7 @@ def main(checkpoint, config_file, dataset, mode):
         #cfg.model_out=init_segmentor(config_file, checkpoint)
         #cfg.hidden_dim=cfg.model_out.backbone.out_channels
         cfg.device = 'cuda'#get_device()
+        cfg.gpu_ids=[0,1]
 
         cfg.work_dir = './work_dirs/clt_segmentation'
         cfg.seed = 42
@@ -61,7 +62,7 @@ def main(checkpoint, config_file, dataset, mode):
         model.auxiliary_head.init_weights(in_channels=192, hidden_dim=192, model_out=init_segmentor(config_file, checkpoint))
         model.CLASSES = datasets[0].CLASSES
         mmcv.mkdir_or_exist(os.path.abspath(cfg.work_dir))
-        train_segmentor(model, datasets, cfg, distributed=False, validate=True)
+        train_segmentor(model, datasets, cfg, distributed=False, validate=True, device_ids=cfg.gpu_ids)
     elif mode == 'test':
         cfg = mmcv.Config.fromfile(config_file)
         cfg.dataset_type = 'PascalVOCDataset'
