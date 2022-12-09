@@ -47,6 +47,7 @@ def main(checkpoint, config_file, dataset, mode):
         cfg.data.train.split = os.path.join(dataset, 'ImageSets/Segmentation/train.txt')
         cfg.load_from = checkpoint
 
+        cfg.data.val.data_root = cfg.data_root
         cfg.data.val.img_dir=os.path.join(dataset, 'JPEGImages/')
         cfg.data.val.ann_dir = os.path.join(dataset, 'Annotations/')
         cfg.data.val.split = os.path.join(dataset, 'ImageSets/Segmentation/val.txt')
