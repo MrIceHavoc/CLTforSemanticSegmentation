@@ -1,8 +1,8 @@
 _base_ = [
-    '../_base_/models/simclr.py',                  # model
-    '../_base_/datasets/imagenet_mocov2.py',       # data TODO PASCAL VOC
-    '../_base_/schedules/sgd_coslr-200e_in1k.py',  # training schedule
-    '../_base_/default_runtime.py',                # runtime setting
+    './mmselfsup/mmselfsup/models/algorithms/simclr.py',                  # model
+    './mmselfsup/mmselfsup/datasets/imagenet_mocov2.py',       # data TODO PASCAL VOC
+    './mmselfsup/mmselfsup/schedules/sgd_coslr-200e_in1k.py',  # training schedule
+    './mmselfsup/mmselfsup/default_runtime.py',                # runtime setting
 ]
 
 model = dict(
@@ -12,6 +12,10 @@ model = dict(
     momentum=0.999,  # Momentum coefficient for the momentum-updated encoder
     backbone=dict(
         type='ResNet',  # Backbone name
+        depth=50,  # Depth of backbone, ResNet has options of 18, 34, 50, 101, 152
+        in_channels=3,  # The channel number of the input images
+        out_indices=[4],  # The output index of the output feature maps, 0 for conv-1, x for stage-x
+        norm_cfg=dict(type='BN')),
     neck=dict(
         type='MoCoV2Neck',  # Neck name
         in_channels=2048,  # Number of input channels
