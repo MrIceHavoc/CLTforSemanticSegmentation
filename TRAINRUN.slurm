@@ -26,4 +26,5 @@ pip freeze
 echo $CUDA_VISIBLE_DEVICES
 
 
-python -O train.py
+python -u mmselfsup/tools/train.py config.py \
+        --work-dir=./work_dir 
