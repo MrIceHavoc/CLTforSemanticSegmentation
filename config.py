@@ -15,7 +15,7 @@ model = dict(
         depth=50,  # Depth of backbone, ResNet has options of 18, 34, 50, 101, 152
         in_channels=3,  # The channel number of the input images
         out_indices=[4],  # The output index of the output feature maps, 0 for conv-1, x for stage-x
-        norm_cfg=dict(type='BN')),
+        norm_cfg=dict(type='BN')),  # Dictionary to construct and config norm layer
     neck=dict(
         type='MoCoV2Neck',  # Neck name
         in_channels=2048,  # Number of input channels
