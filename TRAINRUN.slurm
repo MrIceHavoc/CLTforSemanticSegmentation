@@ -27,4 +27,5 @@ echo $CUDA_VISIBLE_DEVICES
 
 
 python -u mmselfsup/tools/train.py mmselfsup/configs/selfsup/mocov3/mocov3_vit-small-p16_32xb128-fp16-coslr-300e_in1k-224.py \
-        --work-dir=./work_dir 
+        --work-dir=./work_dir \
+        --gpus=2 \
