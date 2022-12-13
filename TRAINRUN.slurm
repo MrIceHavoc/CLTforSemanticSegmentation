@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH -J cv_visual_transformer_train # job name
-#SBATCH -o cv_visual_transformer_train.out # standard output and error log
+#SBATCH -J cv_train # job name
+#SBATCH -o cv_train.out # standard output and error log
 #SBATCH -p titanxp # queue name or partiton name 2080tti*
 #SBATCH -t 24:00:00 # Run time (hh:mm:ss)
 #SBATCH  --gres=gpu:2 # Number of GPUs
@@ -25,10 +25,5 @@ pip freeze
 # Check GPUs
 echo $CUDA_VISIBLE_DEVICES
 
-# Run your training scripts (Python file, Shell scripts...ect)
-#python3 -c 'import torch, torchvision; print(torch.__version__, torch.cuda.is_available())'
-#python3 -c 'import mmseg print(mmseg.__version__)'
 
-#pip install mmcv-full==1.7.0+torch1.12.0+cu113 -f https://download.openmmlab.com/mmcv/dist/index.html
-
-python -O train_test.py
+python -O train.py

@@ -1,14 +1,12 @@
 _base_ = [
-    '../_base_/models/vit.py',                     # model
-    '../_base_/datasets/voc.py',                   # data
+    '../_base_/models/simclr.py',                  # model
+    '../_base_/datasets/imagenet_mocov2.py',       # data TODO PASCAL VOC
     '../_base_/schedules/sgd_coslr-200e_in1k.py',  # training schedule
     '../_base_/default_runtime.py',                # runtime setting
 ]
 
-checkpoint_config = dict(interval=10, max_keep_ckpts=3)
-
 model = dict(
-    type='SimCLR',  # Algorithm name
+    type='SimClr',  # Algorithm name
     queue_len=65536,  # Number of negative keys maintained in the queue
     feat_dim=128,  # Dimension of compact feature vectors, equal to the out_channels of the neck
     momentum=0.999,  # Momentum coefficient for the momentum-updated encoder
