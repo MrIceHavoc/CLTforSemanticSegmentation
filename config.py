@@ -6,27 +6,24 @@ _base_ = [
 ]
 
 model = dict(
-    type='SimClr',  # Algorithm name
+    type='SimCLR',  # Algorithm name
     queue_len=65536,  # Number of negative keys maintained in the queue
     feat_dim=128,  # Dimension of compact feature vectors, equal to the out_channels of the neck
     momentum=0.999,  # Momentum coefficient for the momentum-updated encoder
     backbone=dict(
-        type='ResNet',  # Backbone name
-        depth=50,  # Depth of backbone, ResNet has options of 18, 34, 50, 101, 152
-        in_channels=3,  # The channel number of the input images
-        out_indices=[4],  # The output index of the output feature maps, 0 for conv-1, x for stage-x
-        norm_cfg=dict(type='BN')),  # Dictionary to construct and config norm layer
+        type='VisionTransformer',  # Backbone name
     neck=dict(
-        type='MoCoV2Neck',  # Neck name
+        type='NonLinearNeck',  # Neck name
         in_channels=2048,  # Number of input channels
         hid_channels=2048,  # Number of hidden channels
         out_channels=128,  # Number of output channels
-        with_avg_pool=True),  # Whether to apply the global average pooling after backbone
+        with_avg_pool=True,  # Whether to apply the global average pooling after backbone
+        vit_backbone=True),
     head=dict(
         type='ContrastiveHead',  # Head name, indicates that the MoCo v2 use contrastive loss
         temperature=0.2))  # The temperature hyper-parameter that controls the concentration level of the distribution.
 
-data_source = 'ImageNet'  # data source name
+data_source = 'PascalVOC'  # data source name
 dataset_type = 'MultiViewDataset' # dataset type is related to the pipeline composing
 img_norm_cfg = dict(
     mean=[0.485, 0.456, 0.406],  # Mean values used to pre-training the pre-trained backbone models
@@ -59,8 +56,8 @@ if not prefetch:
 
 # dataset summary
 data = dict(
-    samples_per_gpu=32,  # Batch size of a single GPU, total 32*8=256
-    workers_per_gpu=4,  # Worker to pre-fetch data for each single GPU
+    samples_per_gpu=1,  # Batch size of a single GPU, total 32*8=256
+    workers_per_gpu=0,  # Worker to pre-fetch data for each single GPU
     drop_last=True,  # Whether to drop the last batch of data
     train=dict(
         type=dataset_type,  # dataset name
@@ -112,4 +109,4 @@ log_level = 'INFO'  # The output level of the log.
 load_from = None  # Runner to load ckpt
 resume_from = None  # Resume checkpoints from a given path, the training will be resumed from the epoch when the checkpoint's is saved.
 workflow = [('train', 1)]  # Workflow for runner. [('train', 1)] means there is only one workflow and the workflow named 'train' is executed once.
-persistent_workers = True  # The boolean type to set persistent_workers in Dataloader. see detail in the documentation of PyTorch
+persistent_workers = False  # The boolean type to set persistent_workers in Dataloader. see detail in the documentation of PyTorch
