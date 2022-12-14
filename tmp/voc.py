@@ -64,7 +64,6 @@ class VOCSegmentation(BaseDataSource):
     https://github.com/pytorch/vision/blob/master/torchvision/datasets/voc.py
     """
 
-    _SPLITS_DIR = "Segmentation"
     _TARGET_DIR = "SegmentationClass"
     _TARGET_FILE_EXT = ".png"
     _INPUT_FILE_EXT = ".jpg"
