@@ -81,8 +81,6 @@ class VOCSegmentation(BaseDataSource):
             self.samples = samples
 
             for i, (filename, gt_label) in enumerate(self.samples):
-                #print(gt_label)
-                #print(filename)
                 info = {'img_prefix': self.data_prefix}
                 info['img_info'] = {'filename': filename}
                 info['gt_label'] = np.array(gt_label, dtype=np.int64)
