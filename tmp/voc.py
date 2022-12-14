@@ -3,7 +3,6 @@ import numpy as np
 import os
 
 from PIL import Image
-from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from ..builder import DATASOURCES
 from .base import BaseDataSource
@@ -91,19 +90,3 @@ class VOCSegmentation(BaseDataSource):
                 data_infos.append(info)
 
         return data_infos
-
-    
-    def __getitem__(self, index: int) -> Tuple[Any, Any]:
-        """
-        Args:
-            index (int): Index
-        Returns:
-            tuple: (image, target) where target is the image segmentation.
-        """
-        img = Image.open(self.images[index]).convert("RGB")
-        target = Image.open(self.masks[index])
-
-        if self.transforms is not None:
-            img, target = self.transforms(img, target)
-
-        return img, target
