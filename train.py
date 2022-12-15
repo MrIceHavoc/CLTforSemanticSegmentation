@@ -74,6 +74,7 @@ class PosDecoderHead(nn.Module):
         self.num_encoder_blocks = 1
         self.hidden_sizes = [256]
         self.decoder_hidden_size = 256
+        self.mean_size = 128
         self.classifier_dropout_prob = 0.2
         self.num_labels = 21
         mlps = []
@@ -89,45 +90,21 @@ class PosDecoderHead(nn.Module):
             kernel_size=1,
             bias=False,
         )
-        self.batch_norm = nn.BatchNorm2d(self.decoder_hidden_size)
+        self.batch_norm = nn.BatchNorm2d(self.mean_size)
         self.activation = nn.ReLU()
 
         self.dropout = nn.Dropout(self.classifier_dropout_prob)
-        self.classifier = nn.Conv2d(self.decoder_hidden_size, self.num_labels, kernel_size=1)
+        self.classifier = nn.Conv2d(self.mean_size, self.num_labels, kernel_size=1)
 
 
     def forward(self, encoder_hidden_states: torch.FloatTensor) -> torch.Tensor:
-        batch_size = encoder_hidden_states[-1].shape[0]
-
-        all_hidden_states = ()
-        for encoder_hidden_state, mlp in zip(encoder_hidden_states, self.linear_c):
-            if encoder_hidden_state.ndim == 3:
-                height = width = int(math.sqrt(encoder_hidden_state.shape[-1]))
-                encoder_hidden_state = (
-                    encoder_hidden_state.reshape(batch_size, height, width, -1).permute(0, 3, 1, 2).contiguous()
-                )
-
-
-            # unify channel dimension
-            height, width = encoder_hidden_state.shape[2], encoder_hidden_state.shape[3]
-            print("Enc hidden", encoder_hidden_state.shape)
-            print("MLP: ", mlp)
-            encoder_hidden_state = mlp(encoder_hidden_state)
-            encoder_hidden_state = encoder_hidden_state.permute(0, 2, 1)
-            encoder_hidden_state = encoder_hidden_state.reshape(batch_size, -1, height, width)
-            # upsample
-            encoder_hidden_state = nn.functional.interpolate(
-                encoder_hidden_state, size=encoder_hidden_states[0].size()[2:], mode="bilinear", align_corners=False
-            )
-            all_hidden_states += (encoder_hidden_state,)
-
-        hidden_states = self.linear_fuse(torch.cat(all_hidden_states[::-1], dim=1))
-        hidden_states = self.batch_norm(hidden_states)
-        hidden_states = self.activation(hidden_states)
-        hidden_states = self.dropout(hidden_states)
+        encoder_hidden_states = self.batch_norm(encoder_hidden_states)
+        encoder_hidden_states = self.activation(encoder_hidden_states)
+        encoder_hidden_states = self.dropout(encoder_hidden_states)
 
         # logits are of shape (batch_size, num_labels, height/4, width/4)
-        logits = self.classifier(hidden_states)
+        logits = self.classifier(encoder_hidden_states)
+        logits = torch.sum(logits)
 
         return logits
 
@@ -147,14 +124,12 @@ class PosModel(nn.Module):
         batch_size = pixel_values.shape[0]
         
         outputs = self.base_model(pixel_values).last_hidden_state#, attention_mask=attn_mask
-        print(outputs.shape)
         # You write you new head here
         outputs = self.linear(outputs)
         #outputs = self.linear2(outputs)
         #outputs = self.linear3(outputs)
         outputs = self.proj(outputs)
         outputs = outputs.reshape(batch_size, outputs.shape[0], outputs.shape[1], -1).permute(0, 3, 1, 2).contiguous()
-        print(outputs.shape)
         #outputs = outputs.reshape(batch_size, height, width, -1).permute(0, 3, 1, 2).contiguous()
         outputs = self.decode_head(outputs)
 
@@ -162,17 +137,14 @@ class PosModel(nn.Module):
 
 model = PosModel()
 for param in model.base_model.parameters():
-    param.requires_grad = False#print(model)
+    param.requires_grad = False
 
-print(model)
 feature_extractor = SegformerFeatureExtractor()
 
 def train_transforms(example_batch):
-    print("EXAMPLE BATCH", example_batch)
     images = [x for x in example_batch['pixel_values']]
     labels = [x for x in example_batch['label']]
     inputs = feature_extractor(images, labels)
-    #print("INPUTS", inputs)#del dict[key]
     return inputs
 
 
@@ -195,13 +167,9 @@ train_ds = train_ds.rename_column('image', 'pixel_values')
 train_ds = train_ds.rename_column('object_gt_image', 'label')#class_gt_image
 #train_ds = train_ds.remove_columns(['id', 'height', 'width', 'class_gt_image', 'object_gt_image'])
 #test_ds = dataset['train']#[-20%:]#load_dataset("fuliucansheng/pascal_voc", 'voc2012_segmentation', split=['train[-20%:]'])
-#print("BEFORE SET TRANSFORM", train_ds['pixel_values'])
 train_ds.set_transform(train_transforms)
-#print("AFTER SET TRANSFORM", train_ds['pixel_values'])
 train_ds = train_ds.remove_columns(['classes', 'height', 'width', 'class_gt_image'])
 #test_ds.set_transform(val_transforms)
-#print("TRAIN", train_ds)
-#print("TEST", test_ds)
 epochs = 50
 lr = 0.00006
 batch_size = 2
