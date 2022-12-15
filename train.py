@@ -56,55 +56,56 @@ class SegformerMLP(nn.Module):
     Linear Embedding.
     """
 
-    def __init__(self, config: SegformerConfig, input_dim):
+    def __init__(self, decoder_hidden_size, input_dim):
         super().__init__()
-        print("INPUT DIM", input_dim, "config.decoder_hidden_size", config.decoder_hidden_size)
-        self.proj = nn.Linear(input_dim, config.decoder_hidden_size)
+        self.proj = nn.Linear(input_dim, decoder_hidden_size)
 
     def forward(self, hidden_states: torch.Tensor):
-        print("HIDDEN STATE", hidden_states.shape)
         hidden_states = hidden_states.flatten(2).transpose(1, 2)
-        print("HIDDEN STATE 2", hidden_states.shape)
+
         hidden_states = self.proj(hidden_states)
         return hidden_states
 
 
-class SegformerDecodeHead(SegformerPreTrainedModel):
-    def __init__(self, config):
-        super().__init__(config)
-        # linear layers which will unify the channel dimension of each of the encoder blocks to the same config.decoder_hidden_size
+class PosDecoderHead(nn.Module):
+    def __init__(self):
+        super().__init__()
+        # linear layers which will unify the channel dimension of each of the encoder blocks to the same
+        self.num_encoder_blocks = 1
+        self.hidden_sizes = [256]
+        self.decoder_hidden_size = 256
+        self.classifier_dropout_prob = 0.2
+        self.num_labels = 21
         mlps = []
-        for i in range(config.num_encoder_blocks):
-            print("HIDDEN SIZE: ", i, ": ", config.hidden_sizes[i])
-            mlp = SegformerMLP(config, input_dim=config.hidden_sizes[i])
+        for i in range(self.num_encoder_blocks):
+            mlp = SegformerMLP(self.decoder_hidden_size, input_dim=self.hidden_sizes[i])
             mlps.append(mlp)
         self.linear_c = nn.ModuleList(mlps)
 
         # the following 3 layers implement the ConvModule of the original implementation
         self.linear_fuse = nn.Conv2d(
-            in_channels=config.decoder_hidden_size * config.num_encoder_blocks,
-            out_channels=config.decoder_hidden_size,
+            in_channels=self.decoder_hidden_size * self.num_encoder_blocks,
+            out_channels=self.decoder_hidden_size,
             kernel_size=1,
             bias=False,
         )
-        self.batch_norm = nn.BatchNorm2d(config.decoder_hidden_size)
+        self.batch_norm = nn.BatchNorm2d(self.decoder_hidden_size)
         self.activation = nn.ReLU()
 
-        self.dropout = nn.Dropout(config.classifier_dropout_prob)
-        self.classifier = nn.Conv2d(config.decoder_hidden_size, config.num_labels, kernel_size=1)
+        self.dropout = nn.Dropout(self.classifier_dropout_prob)
+        self.classifier = nn.Conv2d(self.decoder_hidden_size, self.num_labels, kernel_size=1)
 
-        self.config = config
 
     def forward(self, encoder_hidden_states: torch.FloatTensor) -> torch.Tensor:
         batch_size = encoder_hidden_states[-1].shape[0]
 
         all_hidden_states = ()
         for encoder_hidden_state, mlp in zip(encoder_hidden_states, self.linear_c):
-            #if self.config.reshape_last_stage is False and encoder_hidden_state.ndim == 3:
-            height = width = int(math.sqrt(encoder_hidden_state.shape[-1]))
-            encoder_hidden_state = (
-                encoder_hidden_state.reshape(batch_size, height, width, -1).permute(0, 3, 1, 2).contiguous()
-            )
+            if encoder_hidden_state.ndim == 3:
+                height = width = int(math.sqrt(encoder_hidden_state.shape[-1]))
+                encoder_hidden_state = (
+                    encoder_hidden_state.reshape(batch_size, height, width, -1).permute(0, 3, 1, 2).contiguous()
+                )
 
 
             # unify channel dimension
@@ -140,20 +141,13 @@ class PosModel(nn.Module):
         #self.linear2 = nn.Linear(256, 128)
         #self.linear3 = nn.Linear(128, 32)
         self.proj = nn.Conv2d(2, 256, kernel_size=1, stride=1, padding=0)
-        self.decode_head = SegformerDecodeHead(SegformerConfig(
-                                                num_encoder_blocks=4,
-                                                depths=[2, 2, 2, 2],
-                                                sr_ratios=[8, 4, 2, 1],
-                                                hidden_sizes=[32, 64, 160, 256],
-                                                patch_sizes=[7, 3, 3, 3],
-                                                strides=[4, 2, 2, 2],
-                                                num_attention_heads=[1, 2, 5, 8],
-                                                mlp_ratios=[4, 4, 4, 4],)
-                                                )
+        self.decode_head = PosDecoderHead()
 
     def forward(self, pixel_values, labels):#attn_mask
         batch_size = pixel_values.shape[0]
+        
         outputs = self.base_model(pixel_values).last_hidden_state#, attention_mask=attn_mask
+        print(outputs.shape)
         # You write you new head here
         outputs = self.linear(outputs)
         #outputs = self.linear2(outputs)
@@ -169,9 +163,8 @@ class PosModel(nn.Module):
 model = PosModel()
 for param in model.base_model.parameters():
     param.requires_grad = False#print(model)
-#decode_head = SegformerDecodeHead(SegformerConfig())
-#decode_head.classifier = nn.Conv2d(256, 21, kernel_size=(1, 1), stride=(1, 1))
-print(model.decode_head)
+
+print(model)
 feature_extractor = SegformerFeatureExtractor()
 
 def train_transforms(example_batch):
