@@ -58,10 +58,13 @@ class SegformerMLP(nn.Module):
 
     def __init__(self, config: SegformerConfig, input_dim):
         super().__init__()
+        print("INPUT DIM", input_dim, "config.decoder_hidden_size", config.decoder_hidden_size)
         self.proj = nn.Linear(input_dim, config.decoder_hidden_size)
 
     def forward(self, hidden_states: torch.Tensor):
+        print("HIDDEN STATE", hidden_states.shape)
         hidden_states = hidden_states.flatten(2).transpose(1, 2)
+        print("HIDDEN STATE 2", hidden_states.shape)
         hidden_states = self.proj(hidden_states)
         return hidden_states
 
@@ -72,6 +75,7 @@ class SegformerDecodeHead(SegformerPreTrainedModel):
         # linear layers which will unify the channel dimension of each of the encoder blocks to the same config.decoder_hidden_size
         mlps = []
         for i in range(config.num_encoder_blocks):
+            print("HIDDEN SIZE: ", i, ": ", config.hidden_sizes[i])
             mlp = SegformerMLP(config, input_dim=config.hidden_sizes[i])
             mlps.append(mlp)
         self.linear_c = nn.ModuleList(mlps)
@@ -102,10 +106,11 @@ class SegformerDecodeHead(SegformerPreTrainedModel):
                 encoder_hidden_state.reshape(batch_size, height, width, -1).permute(0, 3, 1, 2).contiguous()
             )
 
-            print("Enc hidden", encoder_hidden_state.shape)
 
             # unify channel dimension
             height, width = encoder_hidden_state.shape[2], encoder_hidden_state.shape[3]
+            print("Enc hidden", encoder_hidden_state.shape)
+            print("MLP: ", mlp)
             encoder_hidden_state = mlp(encoder_hidden_state)
             encoder_hidden_state = encoder_hidden_state.permute(0, 2, 1)
             encoder_hidden_state = encoder_hidden_state.reshape(batch_size, -1, height, width)
@@ -124,7 +129,7 @@ class SegformerDecodeHead(SegformerPreTrainedModel):
         logits = self.classifier(hidden_states)
 
         return logits
-        
+
 
 class PosModel(nn.Module):
     def __init__(self):
@@ -135,7 +140,16 @@ class PosModel(nn.Module):
         #self.linear2 = nn.Linear(256, 128)
         #self.linear3 = nn.Linear(128, 32)
         self.proj = nn.Conv2d(2, 256, kernel_size=1, stride=1, padding=0)
-        self.decode_head = SegformerDecodeHead(SegformerConfig())
+        self.decode_head = SegformerDecodeHead(SegformerConfig(
+                                                num_encoder_blocks=4,
+                                                depths=[2, 2, 2, 2],
+                                                sr_ratios=[8, 4, 2, 1],
+                                                hidden_sizes=[32, 64, 160, 256],
+                                                patch_sizes=[7, 3, 3, 3],
+                                                strides=[4, 2, 2, 2],
+                                                num_attention_heads=[1, 2, 5, 8],
+                                                mlp_ratios=[4, 4, 4, 4],)
+                                                )
 
     def forward(self, pixel_values, labels):#attn_mask
         batch_size = pixel_values.shape[0]
