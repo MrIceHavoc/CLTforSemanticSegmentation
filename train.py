@@ -59,9 +59,9 @@ class PosModel(nn.Module):
         self.base_model = SwinModel.from_pretrained("microsoft/swin-tiny-patch4-window7-224")
         #(dense2): Linear(in_features=1024, out_features=256, bias=True)
         #      (dropout): Dropout(p=0.0, inplace=False)
-        self.linear = nn.Linear(768, 256) # output features from bert is 768 and 2 is ur number of labels
-        self.linear2 = nn.Linear(256, 128)
-        self.linear3 = nn.Linear(128, 32)
+        self.linear = nn.LayerNorm(768)#, 256) # output features from bert is 768 and 2 is ur number of labels
+        self.linear2 = nn.LayerNorm(256)#, 128)
+        self.linear3 = nn.LayerNorm(128)#, 32)
         self.dropout = nn.Dropout(0.2)
         self.decode_head = SegformerDecodeHead(SegformerConfig())
         self.decode_head.classifier = nn.Conv2d(256, 21, kernel_size=(1, 1), stride=(1, 1))
@@ -84,11 +84,11 @@ for param in model.base_model.parameters():
     param.requires_grad = False#print(model)
 #decode_head = SegformerDecodeHead(SegformerConfig())
 #decode_head.classifier = nn.Conv2d(256, 21, kernel_size=(1, 1), stride=(1, 1))
-#print(decode_head)
+print(model)
 feature_extractor = SegformerFeatureExtractor()
 
 def train_transforms(example_batch):
-    #print("EXAMPLE BATCH", example_batch)
+    print("EXAMPLE BATCH", example_batch)
     images = [x for x in example_batch['pixel_values']]
     labels = [x for x in example_batch['label']]
     inputs = feature_extractor(images, labels)
@@ -115,9 +115,9 @@ train_ds = train_ds.rename_column('image', 'pixel_values')
 train_ds = train_ds.rename_column('object_gt_image', 'label')#class_gt_image
 #train_ds = train_ds.remove_columns(['id', 'height', 'width', 'class_gt_image', 'object_gt_image'])
 #test_ds = dataset['train']#[-20%:]#load_dataset("fuliucansheng/pascal_voc", 'voc2012_segmentation', split=['train[-20%:]'])
-print("BEFORE SET TRANSFORM", train_ds['pixel_values'])
+#print("BEFORE SET TRANSFORM", train_ds['pixel_values'])
 train_ds.set_transform(train_transforms)
-print("AFTER SET TRANSFORM", train_ds['pixel_values'])
+#print("AFTER SET TRANSFORM", train_ds['pixel_values'])
 train_ds = train_ds.remove_columns(['classes', 'height', 'width', 'class_gt_image'])
 #test_ds.set_transform(val_transforms)
 #print("TRAIN", train_ds)
@@ -137,7 +137,7 @@ training_args = TrainingArguments(
     #eval_accumulation_steps=5,
     load_best_model_at_end=True,
     push_to_hub=False,
-    #remove_unused_columns=False,
+    remove_unused_columns=False,
 )
 
 def compute_metrics(eval_pred):
